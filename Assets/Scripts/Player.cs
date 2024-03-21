@@ -16,12 +16,13 @@ public class Player : MonoBehaviour
     private bool isWalking;
     private bool isRunning;
     private float gravity = -9f;
-    private float jumpHeight = 1000f;
+    //private float jumpHeight = 1000f;
     public LayerMask groundLayer;
     public bool isDead;
     private float health;
     private Transform healthBar;
     private Slider healthSlider;
+    private GameManager instance;
 
 
     private void Start()
@@ -42,6 +43,7 @@ public class Player : MonoBehaviour
         healthSlider = healthBar.GetComponentInChildren<Slider>();
         healthSlider.maxValue = health;
         UpdateHealthBar();
+        instance = FindObjectOfType<GameManager>();
     }
     private void FixedUpdate()
     {
@@ -65,11 +67,11 @@ public class Player : MonoBehaviour
     }
     public void Jump(InputAction.CallbackContext context)
     {
-        if (context.performed && playerController.isGrounded)
-        {
-            playerController.Move(Vector3.up * jumpHeight * Time.deltaTime);
-            playerAnimator.SetBool("isJumping",true);
-        }
+        //if (context.performed && playerController.isGrounded)
+        //{
+        //    playerController.Move(Vector3.up * jumpHeight * Time.deltaTime);
+        //    playerAnimator.SetBool("isJumping",true);
+        //}
     }
     public void Sprint(InputAction.CallbackContext context)
     {
@@ -131,34 +133,46 @@ public class Player : MonoBehaviour
             playerController.Move(Vector3.up * gravity * Time.deltaTime);
         }
     }
-    private void AnimateJump()
-    {
-        RaycastHit hit;
-        if (!playerController.isGrounded)
-        {
-            playerAnimator.SetBool("isFalling", true);
-            if (Physics.SphereCast(cameraCenter.position, 0.2f, -Vector3.up, out hit, groundLayer))
-            {
-                if (playerController.isGrounded)
-                {
-                    playerAnimator.SetBool("isLanding", true);
-                }
-            }
-        }
-        else
-        {
-            playerAnimator.SetBool("isFalling", false);
-            playerAnimator.SetBool("isLanding", false);
-            playerAnimator.SetBool("isJumping", false);
-            
-        }
-    }
+    //private void AnimateJump()
+    //{
+    //    RaycastHit hit;
+    //    if (!playerController.isGrounded)
+    //    {
+    //        playerAnimator.SetBool("isFalling", true);
+    //        if (Physics.SphereCast(cameraCenter.position, 0.2f, -Vector3.up, out hit, groundLayer))
+    //        {
+    //            if (playerController.isGrounded)
+    //            {
+    //                playerAnimator.SetBool("isLanding", true);
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        playerAnimator.SetBool("isFalling", false);
+    //        playerAnimator.SetBool("isLanding", false);
+    //        playerAnimator.SetBool("isJumping", false);
+    //        
+    //    }
+    //}
+
     private void OnTriggerEnter(Collider collision)
      {
         if(collision.gameObject.tag == "Zombie")
         {
             health -= 30f;
             UpdateHealthBar();
+        }
+        if (collision.gameObject.tag == "Wanderer")
+        {
+            health -= 50f;
+            UpdateHealthBar();
+        }
+        if (collision.gameObject.tag == "Runner")
+        {
+            instance.timerMinutes = 5959;
+            instance.timerSeconds = 59;
+            health -= 200f;
         }
     }
 

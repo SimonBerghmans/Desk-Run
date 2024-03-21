@@ -8,15 +8,17 @@ public class GameManager : Singleton
     private GameObject player;
     private Player playerScript;
     public GameObject zombie;
+    public GameObject wanderer;
     public Transform spawnPoint;
     public List <Transform> enemySpawnPoints;
     private Text timerText;
     private Text timeToNextText;
     private Text roundText;
     private Text zombiesText;
-    static public float timerSeconds;
-    static public float timerMinutes;
-    static public float activeZombies;
+    public float timerSeconds;
+    public float timerMinutes;
+    public float activeZombies;
+    private float activeWanderers;
     private float maxZombies;
     private float timeTillNextRound;
     private float timeTillNextTimer;
@@ -37,6 +39,7 @@ public class GameManager : Singleton
         UpdateTimer();
         CheckDead();
         CheckAndSpawnZombies();
+        SpawnWanderers();
         if (!roundTimerRunning)
         {
             StartCoroutine(IncreaseRound());
@@ -51,6 +54,7 @@ public class GameManager : Singleton
     {
         if(playerScript.isDead)
         {
+            SaveSystem.SaveData(this);
             GoToDeathScreen();
         }
     }
@@ -66,6 +70,7 @@ public class GameManager : Singleton
         timerMinutes = 0;
         maxZombies = 30;
         activeZombies = 0;
+        activeWanderers = 0;
         round = 1;
         timeTillNextRound = 30;
         roundTimerRunning = false;
@@ -129,6 +134,15 @@ public class GameManager : Singleton
         timeTillNextTimer -= Time.deltaTime;
         timeToNextText.text = (Mathf.Round(timeTillNextTimer).ToString());
     }
-        
+    private void SpawnWanderers()
+    {
+        if (activeWanderers <= 10)
+        {
+            int randomSpawnNum = Random.Range(0, enemySpawnPoints.Count);
+            Transform randomSpawnPoint = enemySpawnPoints[randomSpawnNum];
+            Instantiate(wanderer, randomSpawnPoint);
+            activeWanderers++;
+        }
+    }
 
 }

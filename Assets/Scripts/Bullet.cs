@@ -5,6 +5,11 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 
 {
+    GameManager gameInstance;
+    private void Start()
+    {
+        gameInstance = FindObjectOfType<GameManager>();
+    }
 
     // Start is called before the first frame update
     private void OnTriggerEnter(Collider collision)
@@ -13,7 +18,7 @@ public class Bullet : MonoBehaviour
         {
             Destroy(collision.gameObject);
             Destroy(this.gameObject);
-            GameManager.activeZombies--;
+            gameInstance.activeZombies--;
             Debug.Log("hit zombie");
         }
         else
